@@ -289,7 +289,10 @@ class GeoJsonParser {
   /// default callback function for creating [Polyline]
   Polyline createDefaultPolyline(
       List<LatLng> points, Map<String, dynamic> properties) {
-    return Polyline(points: points, color: Colors.blue, strokeWidth: 3);
+    return Polyline(
+        points: points,
+        color: defaultPolylineColor!,
+        strokeWidth: defaultPolylineStroke!);
   }
 
   /// default callback function for creating [Polygon]
