@@ -90,8 +90,9 @@ class GeoJsonParser {
       this.defaultPolygonIsFilled});
 
   /// parse GeJson in [String] format
-  void parseGeoJsonAsString(String g) {
-    return parseGeoJson(jsonDecode(g) as Map<String, dynamic>);
+  void parseGeoJsonAsString(String g, List<String> filterCatgegoryExclude) {
+    return parseGeoJson(
+        jsonDecode(g) as Map<String, dynamic>, filterCatgegoryExclude);
   }
 
   /// set default [Marker] color
@@ -141,7 +142,8 @@ class GeoJsonParser {
   }
 
   /// main GeoJson parsing function
-  void parseGeoJson(Map<String, dynamic> g) {
+  void parseGeoJson(
+      Map<String, dynamic> g, List<String> filterCatgegoryExclude) {
     // set default values if they are not specified by constructor
     markerCreationCallback ??= createDefaultMarker;
     polyLineCreationCallback ??= createDefaultPolyline;
@@ -155,7 +157,6 @@ class GeoJsonParser {
     defaultPolygonIsFilled ??= true;
     defaultPolygonBorderStroke ??= 1.0;
 
-    List<String> filterCatgegoryExclude = ['Upper Airspace'];
     // loop through the GeoJson Map and parse it
     for (Map f in g['features'] as List) {
       if (!filterCatgegoryExclude
