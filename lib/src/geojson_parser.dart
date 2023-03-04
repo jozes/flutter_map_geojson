@@ -159,8 +159,10 @@ class GeoJsonParser {
 
     // loop through the GeoJson Map and parse it
     for (Map f in g['features'] as List) {
-      if (!filterCatgegoryExclude
-          .contains(f['properties']['filters'][0]['name'].toString())) {
+      if (!filterCatgegoryExclude.any((item) => f['properties']['filters']
+          .map((filter) => filter["name"])
+          .toList()
+          .contains(item))) {
         String geometryType = f['geometry']['type'].toString();
         switch (geometryType) {
           case 'Point':
