@@ -90,8 +90,9 @@ class GeoJsonParser {
       this.defaultPolygonIsFilled});
 
   /// parse GeJson in [String] format
-  void parseGeoJsonAsString(String g) {
-    return parseGeoJson(jsonDecode(g) as Map<String, dynamic>);
+  void parseGeoJsonAsString(String g, List<String> filterCatgegoryExclude) {
+    return parseGeoJson(
+        jsonDecode(g) as Map<String, dynamic>, filterCatgegoryExclude);
   }
 
   /// set default [Marker] color
@@ -141,7 +142,8 @@ class GeoJsonParser {
   }
 
   /// main GeoJson parsing function
-  void parseGeoJson(Map<String, dynamic> g) {
+  void parseGeoJson(
+      Map<String, dynamic> g, List<String> filterCatgegoryExclude) {
     // set default values if they are not specified by constructor
     markerCreationCallback ??= createDefaultMarker;
     polyLineCreationCallback ??= createDefaultPolyline;
@@ -157,99 +159,76 @@ class GeoJsonParser {
 
     // loop through the GeoJson Map and parse it
     for (Map f in g['features'] as List) {
-      String geometryType = f['geometry']['type'].toString();
-      switch (geometryType) {
-        case 'Point':
-          {
-            markers.add(
-              markerCreationCallback!(
-                  LatLng(f['geometry']['coordinates'][1] as double,
-                      f['geometry']['coordinates'][0] as double),
-                  f['properties'] as Map<String, dynamic>),
-            );
-          }
-          break;
-        case 'MultiPoint':
-          {
-            for (final point in f['geometry']['coordinates'] as List) {
+      if (!filterCatgegoryExclude.any((item) => f['properties']['filters']
+          .map((filter) => filter["name"])
+          .toList()
+          .contains(item))) {
+        String geometryType = f['geometry']['type'].toString();
+        switch (geometryType) {
+          case 'Point':
+            {
               markers.add(
                 markerCreationCallback!(
-                    LatLng(point[1] as double, point[0] as double),
+                    LatLng(f['geometry']['coordinates'][1] as double,
+                        f['geometry']['coordinates'][0] as double),
                     f['properties'] as Map<String, dynamic>),
               );
             }
-          }
-          break;
-        case 'LineString':
-          {
-            final List<LatLng> lineString = [];
-            for (final coords in f['geometry']['coordinates'] as List) {
-              lineString.add(LatLng(coords[1] as double, coords[0] as double));
+            break;
+          case 'MultiPoint':
+            {
+              for (final point in f['geometry']['coordinates'] as List) {
+                markers.add(
+                  markerCreationCallback!(
+                      LatLng(point[1] as double, point[0] as double),
+                      f['properties'] as Map<String, dynamic>),
+                );
+              }
             }
-            polylines.add(polyLineCreationCallback!(
-                lineString, f['properties'] as Map<String, dynamic>));
-          }
-          break;
-        case 'MultiLineString':
-          {
-            for (final line in f['geometry']['coordinates'] as List) {
+            break;
+          case 'LineString':
+            {
               final List<LatLng> lineString = [];
-              for (final coords in line as List) {
+              for (final coords in f['geometry']['coordinates'] as List) {
                 lineString
                     .add(LatLng(coords[1] as double, coords[0] as double));
               }
               polylines.add(polyLineCreationCallback!(
                   lineString, f['properties'] as Map<String, dynamic>));
             }
-          }
-          break;
-        case 'Polygon':
-          {
-            final List<LatLng> outerRing = [];
-            final List<List<LatLng>> holesList = [];
-            int pathIndex = 0;
-            for (final path in f['geometry']['coordinates'] as List) {
-              final List<LatLng> hole = [];
-              for (final coords in path as List<dynamic>) {
-                if (pathIndex == 0) {
-                  // add to polygon's outer ring
-                  outerRing
+            break;
+          case 'MultiLineString':
+            {
+              for (final line in f['geometry']['coordinates'] as List) {
+                final List<LatLng> lineString = [];
+                for (final coords in line as List) {
+                  lineString
                       .add(LatLng(coords[1] as double, coords[0] as double));
-                } else {
-                  // add it to current hole
-                  hole.add(LatLng(coords[1] as double, coords[0] as double));
                 }
+                polylines.add(polyLineCreationCallback!(
+                    lineString, f['properties'] as Map<String, dynamic>));
               }
-              if (pathIndex > 0) {
-                // add hole to the polygon's list of holes
-                holesList.add(hole);
-              }
-              pathIndex++;
             }
-            polygons.add(polygonCreationCallback!(
-                outerRing, holesList, f['properties'] as Map<String, dynamic>));
-          }
-          break;
-        case 'MultiPolygon':
-          {
-            for (final polygon in f['geometry']['coordinates'] as List) {
+            break;
+          case 'Polygon':
+            {
               final List<LatLng> outerRing = [];
               final List<List<LatLng>> holesList = [];
               int pathIndex = 0;
-              for (final path in polygon as List) {
-                List<LatLng> hole = [];
+              for (final path in f['geometry']['coordinates'] as List) {
+                final List<LatLng> hole = [];
                 for (final coords in path as List<dynamic>) {
                   if (pathIndex == 0) {
                     // add to polygon's outer ring
                     outerRing
                         .add(LatLng(coords[1] as double, coords[0] as double));
                   } else {
-                    // add it to a hole
+                    // add it to current hole
                     hole.add(LatLng(coords[1] as double, coords[0] as double));
                   }
                 }
                 if (pathIndex > 0) {
-                  // add to polygon's list of holes
+                  // add hole to the polygon's list of holes
                   holesList.add(hole);
                 }
                 pathIndex++;
@@ -257,8 +236,38 @@ class GeoJsonParser {
               polygons.add(polygonCreationCallback!(outerRing, holesList,
                   f['properties'] as Map<String, dynamic>));
             }
-          }
-          break;
+            break;
+          case 'MultiPolygon':
+            {
+              for (final polygon in f['geometry']['coordinates'] as List) {
+                final List<LatLng> outerRing = [];
+                final List<List<LatLng>> holesList = [];
+                int pathIndex = 0;
+                for (final path in polygon as List) {
+                  List<LatLng> hole = [];
+                  for (final coords in path as List<dynamic>) {
+                    if (pathIndex == 0) {
+                      // add to polygon's outer ring
+                      outerRing.add(
+                          LatLng(coords[1] as double, coords[0] as double));
+                    } else {
+                      // add it to a hole
+                      hole.add(
+                          LatLng(coords[1] as double, coords[0] as double));
+                    }
+                  }
+                  if (pathIndex > 0) {
+                    // add to polygon's list of holes
+                    holesList.add(hole);
+                  }
+                  pathIndex++;
+                }
+                polygons.add(polygonCreationCallback!(outerRing, holesList,
+                    f['properties'] as Map<String, dynamic>));
+              }
+            }
+            break;
+        }
       }
     }
     return;
