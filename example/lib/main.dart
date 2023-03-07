@@ -200,7 +200,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // parse a small test geoJson
     // normally one would use http to access geojson on web and this is
     // the reason why this funcyion is async.
-    myGeoJson.parseGeoJsonAsString(testGeoJson);
+    myGeoJson.parseGeoJsonAsString(testGeoJson,[]);
   }
 
   @override
