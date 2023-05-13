@@ -282,6 +282,8 @@ class GeoJsonParser {
   Marker createDefaultMarker(LatLng point, Map<String, dynamic> properties) {
     return Marker(
       point: point,
+      height: 50,
+      width: 50,
       builder: (context) => defaultTappableMarker(properties, markerTapped),
     );
   }
