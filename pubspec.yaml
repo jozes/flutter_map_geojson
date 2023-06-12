@@ -1,10 +1,11 @@
 name: flutter_map_geojson
-description: This package parses GeoJson formatted spatial data. It prepares three lists of objects defined in
- flutter_map package - Markers, Polylines and Polygons. These object are created by default callbacks which can
- be replaced by user-defined callback function which can be customized according to the requirements.
+description:
+  This package parses GeoJson formatted spatial data. It prepares three lists of objects defined in
+  flutter_map package - Markers, Polylines and Polygons. These object are created by default callbacks which can
+  be replaced by user-defined callback function which can be customized according to the requirements.
 repository: https://github.com/jozes/flutter_map_geojson
 issue_tracker: https://github.com/jozes/flutter_map_geojson/issues
-version: 1.0.1
+version: 2.0.0
 homepage:
 
 environment:
@@ -14,8 +15,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  latlong2: ^0.8.1
-  flutter_map: ^3.0.0
+  latlong2: ^0.9.0
+  flutter_map: ^5.0.0
 
 dev_dependencies:
   flutter_test:
