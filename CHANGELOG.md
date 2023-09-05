@@ -6,5 +6,6 @@
 
 * using default values for Polyline creation instead of hardcoded values in Polyline creation callback.
 
+## [1.0.2] - minor changes
 
-[NoSuchMethodError]: https://api.dart.dev/stable/dart-core/NoSuchMethodError-class.html
+* adding filtering function and updating the version number and dependencies

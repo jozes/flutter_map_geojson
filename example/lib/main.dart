@@ -147,6 +147,17 @@ String testGeoJson = '''
       "properties": {
         "section": "Multipoint M-10"
       }
+    },    
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": 
+        [14.481, 45.982]
+      },
+      "properties": {
+        "section": "Point M-4"
+      }
     }
   ]
 }
@@ -188,7 +199,16 @@ class _MyHomePageState extends State<MyHomePage> {
       defaultMarkerColor: Colors.red,
       defaultPolygonBorderColor: Colors.red,
       defaultPolygonFillColor: Colors.red.withOpacity(0.1));
+
   bool loadingData = false;
+
+  bool myFilterFunction(Map<String, dynamic> properties) {
+    if (properties['section'].toString().contains('Point M-4')) {
+      return false;
+    } else {
+      return true;
+    }
+  }
 
   // this is callback that gets executed when user taps the marker
   void onTapMarkerFunction(Map<String, dynamic> map) {
@@ -206,6 +226,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     myGeoJson.setDefaultMarkerTapCallback(onTapMarkerFunction);
+    myGeoJson.filterFunction = myFilterFunction;
     loadingData = true;
     Stopwatch stopwatch2 = Stopwatch()..start();
     processData().then((_) {
@@ -231,7 +252,7 @@ class _MyHomePageState extends State<MyHomePage> {
         body: FlutterMap(
           mapController: MapController(),
           options: MapOptions(
-            center: LatLng(45.993807, 14.483972),
+            center: const LatLng(45.993807, 14.483972),
             //center: LatLng(45.720405218, 14.406593302),
             zoom: 14,
           ),

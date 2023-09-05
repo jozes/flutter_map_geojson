@@ -39,7 +39,7 @@ The parser supports parsing the following geometries:
 Add the package in pubspec.yaml file:
 
 ```dart
-flutter_map_geojson ^1.0.0
+flutter_map_geojson ^1.0.2
 ```
 
 Import it in the code:
@@ -86,6 +86,7 @@ import 'package:flutter_map_geojson/flutter_map_geojson.dart';
 
 The default [Marker], [Polyline] and [Polygon] creation callback functions can be replaced with user-defined highly customized
 functions. A good starting point are default callback functions which can be custimized to the needs of the project. The default callback functions have only basic functionality to display the spatial objects on the map. The default callback functions support changing the colors, stroke and fill color and marker icon. All these can be defined in default constructor or via setters. 
+One can also apply a filtering function which returns only spatial features that have certian propertis. The filtering function returns a boolean value. For more details see the example program.
 
 For creating tappable polylines one can use package flutter_map_tappable_polyline.
 

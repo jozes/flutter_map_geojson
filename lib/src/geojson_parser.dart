@@ -10,6 +10,7 @@ typedef PolylineCreationCallback = Polyline Function(
     List<LatLng> points, Map<String, dynamic> properties);
 typedef PolygonCreationCallback = Polygon Function(List<LatLng> points,
     List<List<LatLng>>? holePointsList, Map<String, dynamic> properties);
+typedef FilterFunction = bool Function(Map<String, dynamic> properties);
 
 /// GeoJsonParser parses the GeoJson and fills three lists of parsed objects
 /// which are defined in flutter_map package
@@ -74,11 +75,15 @@ class GeoJsonParser {
   /// user defined callback function called when the [Marker] is tapped
   void Function(Map<String, dynamic>)? onMarkerTapCallback;
 
+  /// user defined callback function called during parse for filtering
+  FilterFunction? filterFunction;
+
   /// default constructor - all parameters are optional and can be set later with setters
   GeoJsonParser(
       {this.markerCreationCallback,
       this.polyLineCreationCallback,
       this.polygonCreationCallback,
+      this.filterFunction,
       this.defaultMarkerColor,
       this.defaultMarkerIcon,
       this.onMarkerTapCallback,
@@ -146,6 +151,7 @@ class GeoJsonParser {
     markerCreationCallback ??= createDefaultMarker;
     polyLineCreationCallback ??= createDefaultPolyline;
     polygonCreationCallback ??= createDefaultPolygon;
+    filterFunction ??= defaultFilterFunction;
     defaultMarkerColor ??= Colors.red.withOpacity(0.8);
     defaultMarkerIcon ??= Icons.location_pin;
     defaultPolylineColor ??= Colors.blue.withOpacity(0.8);
@@ -158,6 +164,10 @@ class GeoJsonParser {
     // loop through the GeoJson Map and parse it
     for (Map f in g['features'] as List) {
       String geometryType = f['geometry']['type'].toString();
+      // check if this spatial object passes the filter function
+      if (!filterFunction!(f['properties'] as Map<String, dynamic>)) {
+        continue;
+      }
       switch (geometryType) {
         case 'Point':
           {
@@ -306,6 +316,11 @@ class GeoJsonParser {
       isFilled: defaultPolygonIsFilled!,
       borderStrokeWidth: defaultPolygonBorderStroke!,
     );
+  }
+
+  /// the default filter function returns always true - therefore no filtering
+  bool defaultFilterFunction(Map<String, dynamic> properties) {
+    return true;
   }
 
   /// default callback function called when tappable [Marker] is tapped
