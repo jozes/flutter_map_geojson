@@ -2,7 +2,7 @@ name: flutter_map_geojson
 description: This package parses GeoJson formatted spatial data. 
 repository: https://github.com/jozes/flutter_map_geojson
 issue_tracker: https://github.com/jozes/flutter_map_geojson/issues
-version: 1.0.2
+version: 1.0.3
 homepage:
 
 environment:

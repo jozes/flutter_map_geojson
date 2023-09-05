@@ -9,3 +9,8 @@
 ## [1.0.2] - minor changes
 
 * adding filtering function and updating the version number and dependencies
+
+
+## [1.0.3] - minor changes
+
+* update of package description in pubspec.yaml

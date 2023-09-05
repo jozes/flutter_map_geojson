@@ -39,7 +39,7 @@ The parser supports parsing the following geometries:
 Add the package in pubspec.yaml file:
 
 ```dart
-flutter_map_geojson ^1.0.2
+flutter_map_geojson ^1.0.3
 ```
 
 Import it in the code:
