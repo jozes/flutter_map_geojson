@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:flutter_map/plugin_api.dart';
 import 'package:flutter_map_geojson/flutter_map_geojson.dart';
 // ignore: depend_on_referenced_packages
 import 'package:latlong2/latlong.dart';
@@ -251,16 +250,14 @@ class _MyHomePageState extends State<MyHomePage> {
         appBar: AppBar(title: Text(widget.title)),
         body: FlutterMap(
           mapController: MapController(),
-          options: MapOptions(
-            center: const LatLng(45.993807, 14.483972),
+          options: const MapOptions(
+            initialCenter: LatLng(45.993807, 14.483972),
             //center: LatLng(45.720405218, 14.406593302),
-            zoom: 14,
+            initialZoom: 14,
           ),
           children: [
             TileLayer(
-                urlTemplate:
-                    "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                subdomains: const ['a', 'b', 'c']),
+                urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", subdomains: const ['a', 'b', 'c']),
             //userAgentPackageName: 'dev.fleaflet.flutter_map.example',
             loadingData
                 ? const Center(child: CircularProgressIndicator())
