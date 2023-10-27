@@ -6,6 +6,8 @@ import 'package:latlong2/latlong.dart';
 
 typedef MarkerCreationCallback = Marker Function(
     LatLng point, Map<String, dynamic> properties);
+typedef CircleMarkerCreationCallback = CircleMarker Function(
+    LatLng point, Map<String, dynamic> properties);
 typedef PolylineCreationCallback = Polyline Function(
     List<LatLng> points, Map<String, dynamic> properties);
 typedef PolygonCreationCallback = Polygon Function(List<LatLng> points,
@@ -15,6 +17,7 @@ typedef FilterFunction = bool Function(Map<String, dynamic> properties);
 /// GeoJsonParser parses the GeoJson and fills three lists of parsed objects
 /// which are defined in flutter_map package
 /// - list of [Marker]s
+/// - list of [CircleMarker]s
 /// - list of [Polyline]s
 /// - list of [Polygon]s
 ///
@@ -24,9 +27,9 @@ typedef FilterFunction = bool Function(Map<String, dynamic> properties);
 /// Currently GeoJson parser supports only FeatureCollection and not GeometryCollection.
 /// See the GeoJson Format specification at: https://www.rfc-editor.org/rfc/rfc7946
 ///
-/// For creation of [Marker], [Polyline] and [Polygon] objects the default callback functions
+/// For creation of [Marker], [Polyline], [CircleMarker] and [Polygon] objects the default callback functions
 /// are provided which are used in case when no user-defined callback function is provided.
-/// To fully customize the  [Marker], [Polyline] and [Polygon] creation one has to write his own
+/// To fully customize the  [Marker], [Polyline], [CircleMarker] and [Polygon] creation one has to write his own
 /// callback functions. As a template the default callback functions can be used.
 ///
 class GeoJsonParser {
@@ -39,6 +42,9 @@ class GeoJsonParser {
   /// list of [Polygon] objects created as result of parsing
   final List<Polygon> polygons = [];
 
+  /// list of [CircleMarker] objects created as result of parsing
+  final List<CircleMarker> circles = [];
+
   /// user defined callback function that creates a [Marker] object
   MarkerCreationCallback? markerCreationCallback;
 
@@ -47,6 +53,9 @@ class GeoJsonParser {
 
   /// user defined callback function that creates a [Polygon] object
   PolygonCreationCallback? polygonCreationCallback;
+
+  /// user defined callback function that creates a [Polygon] object
+  CircleMarkerCreationCallback? circleMarkerCreationCallback;
 
   /// default [Marker] color
   Color? defaultMarkerColor;
@@ -72,8 +81,20 @@ class GeoJsonParser {
   /// default flag if [Polygon] is filled (default is true)
   bool? defaultPolygonIsFilled;
 
+  /// default [CircleMarker] border color
+  Color? defaultCircleMarkerColor;
+
+  /// default [CircleMarker] border stroke
+  Color? defaultCircleMarkerBorderColor;
+
+  /// default flag if [CircleMarker] is filled (default is true)
+  bool? defaultCircleMarkerIsFilled;
+
   /// user defined callback function called when the [Marker] is tapped
   void Function(Map<String, dynamic>)? onMarkerTapCallback;
+
+  /// user defined callback function called when the [CircleMarker] is tapped
+  void Function(Map<String, dynamic>)? onCircleMarkerTapCallback;
 
   /// user defined callback function called during parse for filtering
   FilterFunction? filterFunction;
@@ -83,6 +104,7 @@ class GeoJsonParser {
       {this.markerCreationCallback,
       this.polyLineCreationCallback,
       this.polygonCreationCallback,
+      this.circleMarkerCreationCallback,
       this.filterFunction,
       this.defaultMarkerColor,
       this.defaultMarkerIcon,
@@ -92,7 +114,13 @@ class GeoJsonParser {
       this.defaultPolygonBorderColor,
       this.defaultPolygonFillColor,
       this.defaultPolygonBorderStroke,
-      this.defaultPolygonIsFilled});
+      this.defaultPolygonIsFilled,
+      this.defaultCircleMarkerColor,
+      this.defaultCircleMarkerBorderColor,
+      this.defaultCircleMarkerIsFilled,
+      this.onCircleMarkerTapCallback,
+
+      });
 
   /// parse GeJson in [String] format
   void parseGeoJsonAsString(String g) {
@@ -113,6 +141,17 @@ class GeoJsonParser {
   void setDefaultMarkerTapCallback(
       Function(Map<String, dynamic> f) onTapFunction) {
     onMarkerTapCallback = onTapFunction;
+  }
+
+  /// set default [CircleMarker] color
+  set setDefaultCircleMarkerColor(Color color) {
+    defaultCircleMarkerColor = color;
+  }
+
+  /// set default [CircleMarker] tap callback function
+  void setDefaultCircleMarkerTapCallback(
+      Function(Map<String, dynamic> f) onTapFunction) {
+    onCircleMarkerTapCallback = onTapFunction;
   }
 
   /// set default [Polyline] color
@@ -149,6 +188,7 @@ class GeoJsonParser {
   void parseGeoJson(Map<String, dynamic> g) {
     // set default values if they are not specified by constructor
     markerCreationCallback ??= createDefaultMarker;
+    circleMarkerCreationCallback ??= createDefaultCircleMarker;
     polyLineCreationCallback ??= createDefaultPolyline;
     polygonCreationCallback ??= createDefaultPolygon;
     filterFunction ??= defaultFilterFunction;
@@ -160,6 +200,9 @@ class GeoJsonParser {
     defaultPolygonFillColor ??= Colors.black.withOpacity(0.1);
     defaultPolygonIsFilled ??= true;
     defaultPolygonBorderStroke ??= 1.0;
+    defaultCircleMarkerColor ??=Colors.blue.withOpacity(0.25);
+    defaultCircleMarkerBorderColor ??= Colors.black.withOpacity(0.8);
+    defaultCircleMarkerIsFilled ??= true;
 
     // loop through the GeoJson Map and parse it
     for (Map f in g['features'] as List) {
@@ -173,6 +216,16 @@ class GeoJsonParser {
           {
             markers.add(
               markerCreationCallback!(
+                  LatLng(f['geometry']['coordinates'][1] as double,
+                      f['geometry']['coordinates'][0] as double),
+                  f['properties'] as Map<String, dynamic>),
+            );
+          }
+          break;
+        case 'Circle':
+          {
+            circles.add(
+              circleMarkerCreationCallback!(
                   LatLng(f['geometry']['coordinates'][1] as double,
                       f['geometry']['coordinates'][0] as double),
                   f['properties'] as Map<String, dynamic>),
@@ -274,6 +327,7 @@ class GeoJsonParser {
     return;
   }
 
+
   /// default function for creating tappable [Marker]
   Widget defaultTappableMarker(Map<String, dynamic> properties,
       void Function(Map<String, dynamic>) onMarkerTap) {
@@ -292,7 +346,35 @@ class GeoJsonParser {
   Marker createDefaultMarker(LatLng point, Map<String, dynamic> properties) {
     return Marker(
       point: point,
-      builder: (context) => defaultTappableMarker(properties, markerTapped),
+      child: defaultTappableMarker(properties, markerTapped),
+    );
+  }
+
+  // /// default callback function for creating [Marker]
+  // Marker createDefaultMarker(LatLng point, Map<String, dynamic> properties) {
+  //   return Marker(
+  //     point: point,
+  //     child: MouseRegion(
+  //       cursor: SystemMouseCursors.click,
+  //       child: GestureDetector(
+  //         onTap: () {
+  //           markerTapped(properties);
+  //         },
+  //         child: Icon(defaultMarkerIcon, color: defaultMarkerColor),
+  //       ),
+  //     ),
+  //     width: 60,
+  //     height: 60,
+  //   );
+  // }
+
+  /// default callback function for creating [Polygon]
+  CircleMarker createDefaultCircleMarker(LatLng point, Map<String, dynamic> properties) {
+    return CircleMarker(point: point,
+        radius: properties["radius"].toDouble(),
+        useRadiusInMeter: true,
+        color: defaultCircleMarkerColor!,
+        borderColor: defaultCircleMarkerBorderColor!,
     );
   }
 

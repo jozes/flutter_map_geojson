@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:flutter_map/plugin_api.dart';
 import 'package:flutter_map_geojson/flutter_map_geojson.dart';
 // ignore: depend_on_referenced_packages
 import 'package:latlong2/latlong.dart';
@@ -158,6 +157,18 @@ String testGeoJson = '''
       "properties": {
         "section": "Point M-4"
       }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Circle",
+        "coordinates": 
+        [14.481, 45.982]
+      },
+      "properties": {
+        "section": "Multipoint M-10",
+        "radius": 250
+      }
     }
   ]
 }
@@ -195,10 +206,12 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   // instantiate parser, use the defaults
-  GeoJsonParser myGeoJson = GeoJsonParser(
+  GeoJsonParser geoJsonParser = GeoJsonParser(
       defaultMarkerColor: Colors.red,
       defaultPolygonBorderColor: Colors.red,
-      defaultPolygonFillColor: Colors.red.withOpacity(0.1));
+      defaultPolygonFillColor: Colors.red.withOpacity(0.1),
+      defaultCircleMarkerColor: Colors.red.withOpacity(0.25),
+  );
 
   bool loadingData = false;
 
@@ -220,13 +233,13 @@ class _MyHomePageState extends State<MyHomePage> {
     // parse a small test geoJson
     // normally one would use http to access geojson on web and this is
     // the reason why this funcyion is async.
-    myGeoJson.parseGeoJsonAsString(testGeoJson);
+    geoJsonParser.parseGeoJsonAsString(testGeoJson);
   }
 
   @override
   void initState() {
-    myGeoJson.setDefaultMarkerTapCallback(onTapMarkerFunction);
-    myGeoJson.filterFunction = myFilterFunction;
+    geoJsonParser.setDefaultMarkerTapCallback(onTapMarkerFunction);
+    geoJsonParser.filterFunction = myFilterFunction;
     loadingData = true;
     Stopwatch stopwatch2 = Stopwatch()..start();
     processData().then((_) {
@@ -251,10 +264,10 @@ class _MyHomePageState extends State<MyHomePage> {
         appBar: AppBar(title: Text(widget.title)),
         body: FlutterMap(
           mapController: MapController(),
-          options: MapOptions(
-            center: const LatLng(45.993807, 14.483972),
+          options: const MapOptions(
+            initialCenter: LatLng(45.993807, 14.483972),
             //center: LatLng(45.720405218, 14.406593302),
-            zoom: 14,
+            initialZoom: 14,
           ),
           children: [
             TileLayer(
@@ -265,10 +278,11 @@ class _MyHomePageState extends State<MyHomePage> {
             loadingData
                 ? const Center(child: CircularProgressIndicator())
                 : PolygonLayer(
-                    polygons: myGeoJson.polygons,
+                    polygons: geoJsonParser.polygons,
                   ),
-            if (!loadingData) PolylineLayer(polylines: myGeoJson.polylines),
-            if (!loadingData) MarkerLayer(markers: myGeoJson.markers)
+            if (!loadingData) PolylineLayer(polylines: geoJsonParser.polylines),
+            if (!loadingData) MarkerLayer(markers: geoJsonParser.markers),
+            if (!loadingData) CircleLayer(circles: geoJsonParser.circles),
           ],
         ));
   }

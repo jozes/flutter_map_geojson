@@ -27,6 +27,7 @@ The GeoJson parser creates three lists of spatial objects - separate lists of [M
 The parser supports parsing the following geometries:
 
 - Point - transformed into [Marker]s
+- Circle - transformed into [CircleMarker]s - not part of the spec, but handy to have.  Specify radius in the properties.
 - Multipoint - transformed into multiple [Marker]s with same ID property
 - LineString - tranformed in [Polyline]
 - MultiLineString - transformed into multiple [Polyline]s
@@ -84,7 +85,7 @@ import 'package:flutter_map_geojson/flutter_map_geojson.dart';
         ));
 ```
 
-The default [Marker], [Polyline] and [Polygon] creation callback functions can be replaced with user-defined highly customized
+The default [Marker], [Polyline] [CircleMarkers] and [Polygon] creation callback functions can be replaced with user-defined highly customized
 functions. A good starting point are default callback functions which can be custimized to the needs of the project. The default callback functions have only basic functionality to display the spatial objects on the map. The default callback functions support changing the colors, stroke and fill color and marker icon. All these can be defined in default constructor or via setters. 
 One can also apply a filtering function which returns only spatial features that have certian propertis. The filtering function returns a boolean value. For more details see the example program.
 
