@@ -16,7 +16,7 @@ GeoJson Format specification is defined in RFC7964 - see https://www.rfc-editor.
 This package parses GeoJson data and creates spatial objects like [Marker]s, [Polyline]s and [Polygon]s, 
 which are defined in [flutter_map] package.
 
-The ceration of these objects is done by default callback functions. However, one can and probably should 
+The creation of these objects is done by default callback functions. However, one can and probably should 
 write his own callback functions which are implementing the necessary customization of creating spatial objects by specifying 
 the color, stroke, label text and other parameters.  
 

@@ -14,3 +14,9 @@
 ## [1.0.3] - minor changes
 
 * update of package description in pubspec.yaml
+
+## [1.0.4] - minor changes
+
+* update of package description in pubspec.yaml
+* update to flutter_map 6.0
+* adding non-standard circle 
