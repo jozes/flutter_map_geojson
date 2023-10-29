@@ -24,3 +24,7 @@
 ## [1.0.5] - minor changes
 
 * update of README.md, increasing version to 1.0.5
+
+## [1.0.6] - minor changes
+
+* dart formatted geojson_parser.dart, changed README.md

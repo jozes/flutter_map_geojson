@@ -100,27 +100,26 @@ class GeoJsonParser {
   FilterFunction? filterFunction;
 
   /// default constructor - all parameters are optional and can be set later with setters
-  GeoJsonParser(
-      {this.markerCreationCallback,
-      this.polyLineCreationCallback,
-      this.polygonCreationCallback,
-      this.circleMarkerCreationCallback,
-      this.filterFunction,
-      this.defaultMarkerColor,
-      this.defaultMarkerIcon,
-      this.onMarkerTapCallback,
-      this.defaultPolylineColor,
-      this.defaultPolylineStroke,
-      this.defaultPolygonBorderColor,
-      this.defaultPolygonFillColor,
-      this.defaultPolygonBorderStroke,
-      this.defaultPolygonIsFilled,
-      this.defaultCircleMarkerColor,
-      this.defaultCircleMarkerBorderColor,
-      this.defaultCircleMarkerIsFilled,
-      this.onCircleMarkerTapCallback,
-
-      });
+  GeoJsonParser({
+    this.markerCreationCallback,
+    this.polyLineCreationCallback,
+    this.polygonCreationCallback,
+    this.circleMarkerCreationCallback,
+    this.filterFunction,
+    this.defaultMarkerColor,
+    this.defaultMarkerIcon,
+    this.onMarkerTapCallback,
+    this.defaultPolylineColor,
+    this.defaultPolylineStroke,
+    this.defaultPolygonBorderColor,
+    this.defaultPolygonFillColor,
+    this.defaultPolygonBorderStroke,
+    this.defaultPolygonIsFilled,
+    this.defaultCircleMarkerColor,
+    this.defaultCircleMarkerBorderColor,
+    this.defaultCircleMarkerIsFilled,
+    this.onCircleMarkerTapCallback,
+  });
 
   /// parse GeJson in [String] format
   void parseGeoJsonAsString(String g) {
@@ -200,7 +199,7 @@ class GeoJsonParser {
     defaultPolygonFillColor ??= Colors.black.withOpacity(0.1);
     defaultPolygonIsFilled ??= true;
     defaultPolygonBorderStroke ??= 1.0;
-    defaultCircleMarkerColor ??=Colors.blue.withOpacity(0.25);
+    defaultCircleMarkerColor ??= Colors.blue.withOpacity(0.25);
     defaultCircleMarkerBorderColor ??= Colors.black.withOpacity(0.8);
     defaultCircleMarkerIsFilled ??= true;
 
@@ -327,7 +326,6 @@ class GeoJsonParser {
     return;
   }
 
-
   /// default function for creating tappable [Marker]
   Widget defaultTappableMarker(Map<String, dynamic> properties,
       void Function(Map<String, dynamic>) onMarkerTap) {
@@ -369,12 +367,14 @@ class GeoJsonParser {
   // }
 
   /// default callback function for creating [Polygon]
-  CircleMarker createDefaultCircleMarker(LatLng point, Map<String, dynamic> properties) {
-    return CircleMarker(point: point,
-        radius: properties["radius"].toDouble(),
-        useRadiusInMeter: true,
-        color: defaultCircleMarkerColor!,
-        borderColor: defaultCircleMarkerBorderColor!,
+  CircleMarker createDefaultCircleMarker(
+      LatLng point, Map<String, dynamic> properties) {
+    return CircleMarker(
+      point: point,
+      radius: properties["radius"].toDouble(),
+      useRadiusInMeter: true,
+      color: defaultCircleMarkerColor!,
+      borderColor: defaultCircleMarkerBorderColor!,
     );
   }
 

@@ -23,7 +23,7 @@ the color, stroke, label text and other parameters.
 
 ## Features
 
-The GeoJson parser creates three lists of spatial objects - separate lists of [Marker]s, [Polyline]s and [Polygon]s which are input parameters for creating layers in flutter_map.
+The GeoJson parser creates three (four) lists of spatial objects - separate lists of [Marker]s, [Polyline]s and [Polygon]s (and Circles) which are input data for creating layers in flutter_map.
 The parser supports parsing the following geometries:
 
 - Point - transformed into [Marker]s
