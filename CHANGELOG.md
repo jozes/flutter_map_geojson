@@ -20,3 +20,7 @@
 * update of package description in pubspec.yaml
 * update to flutter_map 6.0
 * adding non-standard circle 
+
+## [1.0.5] - minor changes
+
+* update of README.md, increasing version to 1.0.5
