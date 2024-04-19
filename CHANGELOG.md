@@ -28,3 +28,11 @@
 ## [1.0.6] - minor changes
 
 * dart formatted geojson_parser.dart, changed README.md
+
+## [1.0.7] - minor changes
+
+* changed dependency for flutter_map to cover versions from 6 to 8 in pubspec.yaml, changed README.md
+
+## [1.0.8] - minor changes in text
+
+* changed pubspec.yaml, README.md
