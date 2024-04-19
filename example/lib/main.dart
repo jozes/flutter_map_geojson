@@ -16,8 +16,8 @@ String testGeoJson = '''
           [  
             [ 
               [ 
-                14.475314661954956,
-                45.99528512959203
+                0,
+                0
               ],
               [
                 14.48295359322937,
@@ -207,10 +207,10 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   // instantiate parser, use the defaults
   GeoJsonParser geoJsonParser = GeoJsonParser(
-      defaultMarkerColor: Colors.red,
-      defaultPolygonBorderColor: Colors.red,
-      defaultPolygonFillColor: Colors.red.withOpacity(0.1),
-      defaultCircleMarkerColor: Colors.red.withOpacity(0.25),
+    defaultMarkerColor: Colors.red,
+    defaultPolygonBorderColor: Colors.red,
+    defaultPolygonFillColor: Colors.red.withOpacity(0.1),
+    defaultCircleMarkerColor: Colors.red.withOpacity(0.25),
   );
 
   bool loadingData = false;
